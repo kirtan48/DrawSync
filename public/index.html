@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>White Board</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        position: relative;
+      }
+      canvas {
+        border: 1px solid black;
+      }
+      #erase-button {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+      }
+      #erase-button img {
+        display: block;
+        width: 30px; /* Adjust size as needed */
+        height: 30px; /* Adjust size as needed */
+      }
+      #erase-button.selected {
+        background-color: lightgray;
+      }
+      #eraser-cursor {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: black;
+        pointer-events: none;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <h1>dns</h1> -->
+    <canvas id="canvas"></canvas>
+    <button id="erase-button">
+        <!-- <img src="../icons/er.png"/> -->
+      <img src="data:image/png;base64,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" alt="Eraser Icon" />
+    </button>
+    <div id="eraser-cursor"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
